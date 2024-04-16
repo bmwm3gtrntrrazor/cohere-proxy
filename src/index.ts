@@ -101,14 +101,20 @@ app.get("/commandr/v1/models", (req, res) => {
 app.post("/commandr/v1/chat/completions", (req, res) => {
   if (!req.ip) return res.status(400);
 
-  // if (ipMap.has(req.ip)) {
-  //   return res.status(429).json({ message: "Too many requests. Please wait for the previous request to complete." });
-  // }
+  if (ipMap.has(req.ip)) {
+    return res.status(429).json({ message: "Too many requests. Please wait for the previous request to complete." });
+  }
   const stream = req.body.stream ?? false;
 
   const converted = convertOpenAiMessages(req.body.messages);
   if (!converted) return respondWithError(res, "Failed to convert the messages.", stream);
   const squashed = squashHumanMessages(converted);
+
+  if (!stream) {
+    return res.json(
+      createChatCompletionObject("Non-streaming is disabled for this proxy, please enable streaming.", "stop", false)
+    );
+  }
 
   if (stream) {
     res.writeHead(200, {
