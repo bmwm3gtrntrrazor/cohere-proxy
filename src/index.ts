@@ -35,6 +35,11 @@ const queue = async.queue((task: Task, callback) => {
   const { request, response, messages, stream, temperature } = task;
   console.log(`Handling request of ${request.ip}`);
 
+  setTimeout(() => {
+    console.log(`Queue of ${request.ip} was timed out.`);
+    callback();
+  }, 60_000 * 3);
+
   const auth = authArray.pop();
   authArray.push(auth as string);
 
