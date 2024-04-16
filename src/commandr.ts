@@ -80,12 +80,15 @@ export function generateMessage(options: GenerateOptions) {
         const reader = response.body?.getReader();
         const decoder = new TextDecoder("utf-8");
 
+        let incompleteJson = "";
+
         function readEvents() {
           reader?.read().then(({ value, done }) => {
             const text = decoder.decode(value);
             if (text === "") return;
             try {
-              const json = JSON.parse(text);
+              const json = JSON.parse(incompleteJson + text);
+              if (incompleteJson !== "") incompleteJson = "";
 
               options.onToken?.(json["text"]);
 
@@ -95,12 +98,11 @@ export function generateMessage(options: GenerateOptions) {
                 options.onEnd?.("", undefined, message.usage);
                 return resolve();
               }
-
-              if (!done) readEvents();
             } catch (error) {
-              console.log(error);
-              options.onEnd?.("", undefined);
+              incompleteJson += text;
             }
+
+            if (!done) readEvents();
           });
         }
 

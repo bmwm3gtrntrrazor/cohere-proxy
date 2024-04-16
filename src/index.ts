@@ -11,8 +11,6 @@ import {
 import { generateMessage } from "./commandr";
 import async from "async";
 
-const app = express();
-
 type Task = {
   request: Request;
   response: Response;
@@ -59,6 +57,7 @@ const queue = async.queue((task: Task, callback) => {
         return;
       }
 
+      console.log(usage);
       if (usage) {
         TOTAL_TOKEN_USAGE += usage.totalTokens;
         TOTAL_COMPLETION_TOKENS += usage.completionTokens;
@@ -75,18 +74,21 @@ const queue = async.queue((task: Task, callback) => {
       callback();
     },
   });
-}, 1);
+}, 3);
 
-app.use(express.json());
+const app = express();
+
+app.use(express.json({ limit: "5mb" }));
+app.set("trust proxy", true);
 
 app.get("/", (req, res) => {
   res.setHeader("Content-Type", "text/plain").send(
     `
 # Stats
   - Uptime: ${Math.round((new Date().getTime() - STARTED_AT) / 1000)}
-  - Total Token Usage: ?
-  - Total Completion Tokens: ?
-  - Total Prompt Tokens: ?
+  - Total Token Usage: ${TOTAL_TOKEN_USAGE}
+  - Total Completion Tokens: ${TOTAL_COMPLETION_TOKENS}
+  - Total Prompt Tokens: ${TOTAL_PROMPT_TOKENS}
   - Total Proompts: ${TOTAL_PROOMPTS}
   - Proompters in Queue: ${queue.length()}
   `.trim()
