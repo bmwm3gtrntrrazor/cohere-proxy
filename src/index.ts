@@ -61,8 +61,8 @@ const queue = async.queue((task: Task, callback) => {
         TOTAL_TOKEN_USAGE += usage.totalTokens;
         TOTAL_COMPLETION_TOKENS += usage.completionTokens;
         TOTAL_PROMPT_TOKENS += usage.promptTokens;
-        TOTAL_PROOMPTS += 1;
       }
+      TOTAL_PROOMPTS += 1;
 
       const data = createChatCompletionObject(finalContent, "stop", true);
       response.write(`data: ${JSON.stringify(data)}\n\n`);
@@ -82,9 +82,9 @@ app.get("/", (req, res) => {
     `
 # Stats
   - Uptime: ${Math.round((new Date().getTime() - STARTED_AT) / 1000)}
-  - Total Token Usage: ${TOTAL_TOKEN_USAGE}
-  - Total Completion Tokens: ${TOTAL_COMPLETION_TOKENS}
-  - Total Prompt Tokens: ${TOTAL_PROMPT_TOKENS}
+  - Total Token Usage: ?
+  - Total Completion Tokens: ?
+  - Total Prompt Tokens: ?
   - Total Proompts: ${TOTAL_PROOMPTS}
   - Proompters in Queue: ${queue.length()}
   `.trim()
