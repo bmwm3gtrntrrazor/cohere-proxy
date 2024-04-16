@@ -145,6 +145,10 @@ app.post("/commandr/v1/chat/completions", (req, res) => {
   ipMap.set(req.ip, true);
 });
 
+process.on("uncaughtException", function (err) {
+  console.log("FATAL ERROR: " + err);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
