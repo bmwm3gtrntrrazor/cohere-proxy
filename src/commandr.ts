@@ -9,6 +9,7 @@ type OpenAiUsage = {
 export type GenerateOptions = {
   auth: string;
   messages: { message: string; role: string }[];
+  temperature?: number;
   model?: string;
   stream?: boolean;
   seed?: number;
@@ -17,6 +18,7 @@ export type GenerateOptions = {
 };
 
 export function generateMessage(options: GenerateOptions) {
+  const temperature = 0.85;
   const model = options.model ?? "command-r-plus";
   const stream = options.stream ?? false;
 
@@ -33,7 +35,7 @@ export function generateMessage(options: GenerateOptions) {
       body: JSON.stringify({
         message: latestMessage?.message ?? "",
         chat_history: options.messages,
-        temperature: 0.3,
+        temperature: temperature,
         connectors: [],
         prompt_truncation: "OFF",
         stream: stream,

@@ -17,6 +17,7 @@ type Task = {
   request: Request;
   response: Response;
   stream: boolean;
+  temperature: number;
   messages: {
     message: string;
     role: string;
@@ -33,7 +34,7 @@ const ipMap = new Map();
 const authArray = [...(AUTH as string[])];
 
 const queue = async.queue((task: Task, callback) => {
-  const { request, response, messages, stream } = task;
+  const { request, response, messages, stream, temperature } = task;
   console.log(`Handling request of ${request.ip}`);
 
   const auth = authArray.pop();
@@ -43,6 +44,7 @@ const queue = async.queue((task: Task, callback) => {
     auth: auth as string,
     messages,
     stream,
+    temperature,
     onToken: (token) => {
       if (!stream) return;
       const data = createChatCompletionObject(token, null, true);
@@ -130,6 +132,7 @@ app.post("/commandr/v1/chat/completions", (req, res) => {
     response: res,
     messages: squashed,
     stream: stream,
+    temperature: parseInt(req.body.temperature),
   });
   ipMap.set(req.ip, true);
 });
