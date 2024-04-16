@@ -105,9 +105,9 @@ app.get("/commandr/v1/models", (req, res) => {
 app.post("/commandr/v1/chat/completions", (req, res) => {
   if (!req.ip) return res.status(400);
 
-  if (ipMap.has(req.ip)) {
-    return res.status(429).json({ message: "Too many requests. Please wait for the previous request to complete." });
-  }
+  // if (ipMap.has(req.ip)) {
+  //   return res.status(429).json({ message: "Too many requests. Please wait for the previous request to complete." });
+  // }
   const stream = req.body.stream ?? false;
 
   const converted = convertOpenAiMessages(req.body.messages);
@@ -129,6 +129,7 @@ app.post("/commandr/v1/chat/completions", (req, res) => {
   }
 
   console.log("New ip added to the queue " + req.ip);
+  console.log(queue.length(), queue.running());
   queue.push({
     request: req,
     response: res,
